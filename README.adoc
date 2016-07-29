@@ -1,0 +1,26 @@
+= JUnit4 test class processor
+Patrick Reinhart <https://github.com/reinhapa[@reinhapa]>
+:project-full-path: reinhapa/annotation-processor
+:github-branch: master
+
+image:https://img.shields.io/badge/license-MIT-blue.svg["MIT License", link="https://github.com/{project-full-path}/blob/github-branch}/LICENSE"]
+image:https://img.shields.io/badge/Java-8-blue.svg["Supported Versions", link="https://travis-ci.org/{project-full-path}"]
+image:https://img.shields.io/travis/{project-full-path}/{github-branch}.svg["Build Status", link="https://travis-ci.org/{project-full-path}"]
+image:https://img.shields.io/codecov/c/github/{project-full-path}/{github-branch}.svg["Code Coverage", link="https://codecov.io/github/{project-full-path}?branch={github-branch}"]
+
+image:https://codecov.io/github/{project-full-path}/branch.svg?branch={github-branch}[codecov.io]
+
+Provides a `javac` annotation processor checking for potential missing JUnit 4 test methods not annotated with `@Test`.
+
+== Usage
+To add the processor to the `javac` compiler use the following additional arguments:
+
+----
+javac -processor net.reini.javac.JUnit4ClassProcessor -processorpath [path-to]/annotation-processor.jar
+----
+
+== Contribute
+Contributions are always welcome. Use https://google.github.io/styleguide/javaguide.html[Google code style format] for your changes. 
+
+== License
+This project is licensed under the https://github.com/{project-full-path}/blob/github-branch}/LICENSE[MIT license]

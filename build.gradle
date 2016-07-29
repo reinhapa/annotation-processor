@@ -1,0 +1,111 @@
+import java.text.SimpleDateFormat
+
+buildscript {
+    repositories {
+        jcenter()
+    }
+
+    dependencies {
+        classpath 'org.asciidoctor:asciidoctor-gradle-plugin:1.5.3'
+        classpath 'net.nemerosa:versioning:1.7.1'
+    }
+}
+
+configurations {
+    asciidoclet
+}
+
+apply plugin: 'java'
+apply plugin: 'signing'
+apply plugin: 'eclipse'
+apply plugin: 'jacoco'
+apply plugin: 'org.asciidoctor.convert'
+apply plugin: 'net.nemerosa.versioning'
+
+group = 'net.reini'
+description = 'Provides a javac annotation processor checking for potential missing JUnit 4 test methods not annotated with @Test'
+
+Date buildTimeAndDate = new Date()
+ext {
+    buildDate = new SimpleDateFormat('yyyy-MM-dd').format(buildTimeAndDate)
+    buildTime = new SimpleDateFormat('HH:mm:ss.SSSZ').format(buildTimeAndDate)
+}
+
+repositories {
+    jcenter()
+}
+
+compileTestJava {
+    options.compilerArgs = [ 
+         "-processor",
+         "net.reini.javac.JUnit4ClassProcessor",
+         "-processorpath",
+         "${buildDir}/classes/main"
+     ]
+}
+
+dependencies {
+    compile 'org.slf4j:slf4j-api:1.7.21'
+
+    testCompile 'junit:junit:4.12'
+    testCompile 'org.easymock:easymock:3.4'
+
+    asciidoclet 'org.asciidoctor:asciidoclet:1.+'
+}
+
+task sourcesJar(type: Jar) {
+    classifier 'sources'
+    from sourceSets.main.allSource
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier 'javadoc'
+    from javadoc.destinationDir
+}
+
+artifacts {
+    archives sourcesJar
+    archives javadocJar
+}
+
+signing {
+    required { project.hasProperty('signing.password') && !project.version.contains('-SNAPSHOT') }
+    sign configurations.archives
+}
+
+jar {
+    manifest {
+        attributes 'Implementation-Title': 'JUnit compatibility classes',
+                   'Implementation-Version': version,
+                   'Created-By': "${System.properties['java.version']} (${System.properties['java.vendor']} ${System.properties['java.vm.version']})".toString(),
+                   'Build-Date': buildDate,
+                   'Build-Time': buildTime,
+                   'Build-Revision': versioning.info.commit,
+                   'Specification-Title': project.name,
+                   'Specification-Version': project.version,
+                   'Specification-Vendor': 'reini.net'
+        metaInf {
+            from file('.')
+            include 'LICENSE'
+        }
+    }
+}
+
+jacocoTestReport {
+    reports {
+        xml.enabled = true
+        html.enabled = true
+    }
+}
+
+check.dependsOn jacocoTestReport
+
+javadoc {
+    options.docletpath = configurations.asciidoclet.files.asType(List)
+    options.doclet = 'org.asciidoctor.Asciidoclet'
+    options.addStringOption "-base-dir", "${projectDir}"
+    options.addStringOption "-attribute",
+            "name=${project.name}," +
+            "version=${project.version}," +
+            "title-link=http://github.com/reinhapa/[${project.name} ${project.version}]"
+}
