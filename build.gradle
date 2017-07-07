@@ -37,12 +37,9 @@ repositories {
 
 compileTestJava {
     options.compilerArgs = [ 
-         "-processor",
-         "net.reini.javac.JUnit4ClassProcessor",
-         "-processorpath",
-         "${buildDir}/classes/main"
-     ]
-}
+       "-processor", "net.reini.javac.JUnit4ClassProcessor"
+    ]
+ }
 
 dependencies {
     compile 'org.slf4j:slf4j-api:1.7.21'
