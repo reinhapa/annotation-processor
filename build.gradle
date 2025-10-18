@@ -45,7 +45,7 @@ dependencies {
     compile 'org.slf4j:slf4j-api:1.7.36'
 
     testCompile 'junit:junit:4.13.2'
-    testCompile 'org.easymock:easymock:3.4'
+    testCompile 'org.easymock:easymock:3.6'
 
     asciidoclet 'org.asciidoctor:asciidoclet:1.+'
 }
