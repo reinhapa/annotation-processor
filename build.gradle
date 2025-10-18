@@ -47,7 +47,7 @@ dependencies {
     testCompile 'junit:junit:4.13.2'
     testCompile 'org.easymock:easymock:3.6'
 
-    asciidoclet 'org.asciidoctor:asciidoclet:1.+'
+    asciidoclet 'org.asciidoctor:asciidoclet:2.+'
 }
 
 task sourcesJar(type: Jar) {
