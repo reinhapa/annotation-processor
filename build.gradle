@@ -1,72 +1,43 @@
-import java.text.SimpleDateFormat
-
-buildscript {
-    repositories {
-        jcenter()
-    }
-
-    dependencies {
-        classpath 'org.asciidoctor:asciidoctor-gradle-plugin:1.5.3'
-        classpath 'net.nemerosa:versioning:1.7.1'
-    }
+plugins {
+    id 'java'
+    id 'signing'
+    id 'eclipse'
+    id 'jacoco'
+    id 'net.nemerosa.versioning' version '3.1.0'
 }
 
 configurations {
     asciidoclet
 }
 
-apply plugin: 'java'
-apply plugin: 'signing'
-apply plugin: 'eclipse'
-apply plugin: 'jacoco'
-apply plugin: 'org.asciidoctor.convert'
-apply plugin: 'net.nemerosa.versioning'
-
 group = 'net.reini'
 description = 'Provides a javac annotation processor checking for potential missing JUnit 4 test methods not annotated with @Test'
 
-Date buildTimeAndDate = new Date()
-ext {
-    buildDate = new SimpleDateFormat('yyyy-MM-dd').format(buildTimeAndDate)
-    buildTime = new SimpleDateFormat('HH:mm:ss.SSSZ').format(buildTimeAndDate)
+repositories {
+    mavenCentral()
 }
 
-repositories {
-    jcenter()
+java {
+  sourceCompatibility = JavaVersion.VERSION_21
+  withJavadocJar()
+  withSourcesJar()
 }
 
 compileTestJava {
     options.compilerArgs = [ 
-       "-processor", "net.reini.javac.JUnit4ClassProcessor"
+//       "-processor", "net.reini.javac.JUnit4ClassProcessor"
     ]
  }
 
 dependencies {
-    compile 'org.slf4j:slf4j-api:1.7.36'
+    implementation 'org.slf4j:slf4j-api:1.7.36'
 
-    testCompile 'junit:junit:4.13.2'
-    testCompile 'org.easymock:easymock:5.6.0'
-
-    asciidoclet 'org.asciidoctor:asciidoclet:2.+'
-}
-
-task sourcesJar(type: Jar) {
-    classifier 'sources'
-    from sourceSets.main.allSource
-}
-
-task javadocJar(type: Jar, dependsOn: javadoc) {
-    classifier 'javadoc'
-    from javadoc.destinationDir
-}
-
-artifacts {
-    archives sourcesJar
-    archives javadocJar
+    testImplementation 'junit:junit:4.13.2'
+    testImplementation 'org.easymock:easymock:5.6.0'
 }
 
 signing {
-    required { project.hasProperty('signing.password') && !project.version.contains('-SNAPSHOT') }
+    required = (project.hasProperty('signing.password') && !project.version.contains('-SNAPSHOT'))
     sign configurations.archives
 }
 
@@ -75,8 +46,6 @@ jar {
         attributes 'Implementation-Title': 'JUnit compatibility classes',
                    'Implementation-Version': version,
                    'Created-By': "${System.properties['java.version']} (${System.properties['java.vendor']} ${System.properties['java.vm.version']})".toString(),
-                   'Build-Date': buildDate,
-                   'Build-Time': buildTime,
                    'Build-Revision': versioning.info.commit,
                    'Specification-Title': project.name,
                    'Specification-Version': project.version,
@@ -90,19 +59,9 @@ jar {
 
 jacocoTestReport {
     reports {
-        xml.enabled = true
-        html.enabled = true
+        xml.required = true
+        html.required = true
     }
 }
 
 check.dependsOn jacocoTestReport
-
-javadoc {
-    options.docletpath = configurations.asciidoclet.files.asType(List)
-    options.doclet = 'org.asciidoctor.Asciidoclet'
-    options.addStringOption "-base-dir", "${projectDir}"
-    options.addStringOption "-attribute",
-            "name=${project.name}," +
-            "version=${project.version}," +
-            "title-link=http://github.com/reinhapa/[${project.name} ${project.version}]"
-}
