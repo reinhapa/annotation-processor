@@ -3,7 +3,7 @@ plugins {
     id 'signing'
     id 'eclipse'
     id 'jacoco'
-    id 'net.nemerosa.versioning' version '3.1.0'
+    id 'net.nemerosa.versioning' version '4.0.1'
 }
 
 configurations {
