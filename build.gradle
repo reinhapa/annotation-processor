@@ -30,7 +30,7 @@ compileTestJava {
  }
 
 dependencies {
-    implementation 'org.slf4j:slf4j-api:2.0.19'
+    implementation 'org.slf4j:slf4j-api:2.0.20'
 
     testImplementation 'junit:junit:4.13.2'
     testImplementation 'org.easymock:easymock:5.7.0'
